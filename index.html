@@ -4602,72 +4602,91 @@ function clusterLevels(levels, tolerancePct=0.65){
       groups.push({center:item.price,items:[item]});
     }else{
       g.items.push(item);
-      g.center=g.items.reduce((a,x)=>a+x.price,0)/g.items.length;
+      g.center=g.items.reduce((sum,x)=>sum+x.price,0)/g.items.length;
     }
   }
-  return groups.map(g=>({price:g.center,strength:g.items.length,types:[...new Set(g.items.map(x=>x.type))]}));
+  return groups.map(g=>({
+    price:g.center,
+    strength:g.items.length,
+    score:g.items.reduce((sum,x)=>sum+(Number(x.weight)||1),0),
+    types:[...new Set(g.items.map(x=>x.type))],
+    timeframes:[...new Set(g.items.map(x=>x.tf).filter(Boolean))],
+    evidence:g.items.map(x=>x.type)
+  }));
 }
 function calculateSupportResistance(candles){
-  if(!candles || candles.length<80) return {supports:[],resistances:[],poc:null,vah:null,val:null,current:null};
+  if(!candles || candles.length<80) return {supports:[],resistances:[],poc:null,vah:null,val:null,current:null,atr:null};
   const current=candles.at(-1).close;
-  const lows=pivotLows(candles,3,3).map(x=>({price:x.price,type:"Swing Low",weight:3}));
-  const highs=pivotHighs(candles,3,3).map(x=>({price:x.price,type:"Swing High",weight:3}));
-  const vp=volumeProfile(candles,40);
-  const extra=[];
-  if(Number.isFinite(vp.poc)) extra.push({price:vp.poc,type:"VPVR POC",weight:5});
-  if(Number.isFinite(vp.val)) extra.push({price:vp.val,type:"VPVR VAL",weight:2});
-  if(Number.isFinite(vp.vah)) extra.push({price:vp.vah,type:"VPVR VAH",weight:2});
+  const atrVals=atr(candles,14); const currentAtr=atrVals.at(-1) || 0;
+  const lows=pivotLows(candles,3,3).map(x=>({price:x.price,type:"Swing Low",weight:4}));
+  const highs=pivotHighs(candles,3,3).map(x=>({price:x.price,type:"Swing High",weight:4}));
+  const vp=volumeProfile(candles,40), extra=[];
+  if(Number.isFinite(vp.poc)) extra.push({price:vp.poc,type:"VPVR POC",weight:6});
+  if(Number.isFinite(vp.val)) extra.push({price:vp.val,type:"VPVR VAL",weight:4});
+  if(Number.isFinite(vp.vah)) extra.push({price:vp.vah,type:"VPVR VAH",weight:4});
   const closes=candles.map(x=>x.close), e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200), bb=bollinger(closes,20,2);
-  if(Number.isFinite(e20)) extra.push({price:e20,type:"EMA 20",weight:2});
-  if(Number.isFinite(e50)) extra.push({price:e50,type:"EMA 50",weight:3});
-  if(Number.isFinite(e200)) extra.push({price:e200,type:"SMA/EMA 200",weight:4});
-  if(Number.isFinite(bb.lower)) extra.push({price:bb.lower,type:"Bollinger Alt Bant",weight:3});
-  if(Number.isFinite(bb.upper)) extra.push({price:bb.upper,type:"Bollinger Üst Bant",weight:3});
-  const all=[...lows,...highs,...extra];
-  const groups=clusterLevels(all,0.8).map(g=>({...g,score:g.items?g.items.reduce((a,x)=>a+x.weight,0):g.strength}));
-  const supports=groups.filter(g=>g.price<current).map(g=>({...g,distance:priceDistance(g.price,current)})).sort((a,b)=>a.distance-b.distance);
-  const resistances=groups.filter(g=>g.price>current).map(g=>({...g,distance:priceDistance(g.price,current)})).sort((a,b)=>a.distance-b.distance);
-  return {supports:supports.slice(0,5),resistances:resistances.slice(0,5),poc:vp.poc,vah:vp.vah,val:vp.val,current,ema20:e20,ema50:e50,ema200:e200,bb};
+  if(Number.isFinite(e20)) extra.push({price:e20,type:"EMA 20",weight:3});
+  if(Number.isFinite(e50)) extra.push({price:e50,type:"EMA 50",weight:4});
+  if(Number.isFinite(e200)) extra.push({price:e200,type:"EMA 200",weight:5});
+  if(Number.isFinite(bb.lower)) extra.push({price:bb.lower,type:"Bollinger Alt Bant",weight:2});
+  if(Number.isFinite(bb.upper)) extra.push({price:bb.upper,type:"Bollinger Üst Bant",weight:2});
+  const groups=clusterLevels([...lows,...highs,...extra],0.65);
+  const minGap=Math.max(currentAtr*0.35,current*0.0025);
+  const supports=groups.filter(g=>g.price<current-minGap).map(g=>({...g,distance:priceDistance(g.price,current)})).sort((a,b)=>a.distance-b.distance);
+  const resistances=groups.filter(g=>g.price>current+minGap).map(g=>({...g,distance:priceDistance(g.price,current)})).sort((a,b)=>a.distance-b.distance);
+  return {supports:supports.slice(0,8),resistances:resistances.slice(0,8),poc:vp.poc,vah:vp.vah,val:vp.val,current,atr:currentAtr,ema20:e20,ema50:e50,ema200:e200,bb};
 }
 function srSignalForTf(candles){
   const closes=candles.map(x=>x.close), last=closes.at(-1), r=rsi(closes,14), m=macd(closes), bb=bollinger(closes,20,2), div=divergenceAnalysis(candles,rsiSeries(closes,14)), crosses=buildCrossEvidence(candles);
-  const sr=calculateSupportResistance(candles);
-  const positive=[],negative=[];
-  if(last>sr.ema20) positive.push("Fiyat EMA 20 üzerinde"); else negative.push("Fiyat EMA 20 altında");
-  if(last>sr.ema50) positive.push("Fiyat EMA 50 üzerinde"); else negative.push("Fiyat EMA 50 altında");
-  if(Number.isFinite(sr.ema200)){if(last>sr.ema200) positive.push("Fiyat 200 ortalama üzerinde"); else negative.push("Fiyat 200 ortalama altında");}
-  if(r>=55) positive.push(`RSI ${fmt(r,1)}: pozitif momentum`); if(r<=45) negative.push(`RSI ${fmt(r,1)}: negatif momentum`);
-  if(Number.isFinite(m?.histogram)){if(m.histogram>0) positive.push("MACD histogram pozitif"); else negative.push("MACD histogram negatif");}
-  if(div.bullishRegular||div.bullishHidden) positive.push("Bullish divergence tespit edildi");
-  if(div.bearishRegular||div.bearishHidden) negative.push("Bearish divergence tespit edildi");
-  crosses.forEach(x=>{if(x.type==='GOLDEN') positive.push(`${x.fast}/${x.slow} Golden Cross`); if(x.type==='DEATH') negative.push(`${x.fast}/${x.slow} Death Cross`);});
-  const nearestS=sr.supports[0],nearestR=sr.resistances[0];
-  return {sr,rsi:r,macd:m,bb,div,crosses,positive,negative,last};
+  const sr=calculateSupportResistance(candles), positive=[],negative=[],categories={};
+  const add=(arr,cat,text,weight=1)=>{arr.push({text,weight,cat});(categories[cat]??=[]).push(text)};
+  if(last>sr.ema20) add(positive,"Trend","Fiyat EMA 20 üzerinde",2); else add(negative,"Trend","Fiyat EMA 20 altında",2);
+  if(last>sr.ema50) add(positive,"Trend","Fiyat EMA 50 üzerinde",2); else add(negative,"Trend","Fiyat EMA 50 altında",2);
+  if(Number.isFinite(sr.ema200)){if(last>sr.ema200) add(positive,"Trend","Fiyat 200 EMA üzerinde",3); else add(negative,"Trend","Fiyat 200 EMA altında",3);}
+  if(r>=55) add(positive,"Momentum",`RSI ${fmt(r,1)}: pozitif momentum`,2); else if(r<=45) add(negative,"Momentum",`RSI ${fmt(r,1)}: negatif momentum`,2); else add(positive,"Momentum",`RSI ${fmt(r,1)}: nötr bölge`,0.25);
+  if(Number.isFinite(m?.histogram)){if(m.histogram>0) add(positive,"Momentum","MACD histogram pozitif",2); else add(negative,"Momentum","MACD histogram negatif",2);}
+  if(div.bullishRegular) add(positive,"Divergence","Regular bullish divergence",3);
+  if(div.bullishHidden) add(positive,"Divergence","Hidden bullish divergence",2);
+  if(div.bearishRegular) add(negative,"Divergence","Regular bearish divergence",3);
+  if(div.bearishHidden) add(negative,"Divergence","Hidden bearish divergence",2);
+  crosses.forEach(x=>{if(x.type==='GOLDEN') add(positive,"Cross",`${x.fast}/${x.slow} Golden Cross`,3); if(x.type==='DEATH') add(negative,"Cross",`${x.fast}/${x.slow} Death Cross`,3);});
+  return {sr,rsi:r,macd:m,bb,div,crosses,positive,negative,categories,last};
+}
+function scoreEvidence(valid){
+  const caps={Trend:24,Momentum:18,Cross:14,Divergence:14,Structure:12,Volatility:8,Flow:10};
+  const scoreSide=(side)=>{const totals={};for(const x of valid){for(const e of x.analysis[side]) totals[e.cat]=(totals[e.cat]||0)+e.weight;}return Object.entries(totals).reduce((s,[k,v])=>s+Math.min(v,caps[k]||10),0)};
+  const pos=scoreSide("positive"),neg=scoreSide("negative"),total=pos+neg||1;
+  return {pos,neg,net:Math.round((pos-neg)/total*100),confidence:Math.min(100,Math.round(Math.abs(pos-neg)/(pos+neg||1)*100))};
 }
 function renderSrLevel(level,kind,current){
-  if(!level) return `<div class="sr-level ${kind}"><h3>${kind==='support'?'Destek':'Direnç'}</h3><div class="sr-price">Bulunamadı</div><div class="sr-meta">Yeterli yakın seviye doğrulanamadı.</div></div>`;
-  const labels=level.types.join(" + ");
-  return `<div class="sr-level ${kind}"><h3>${kind==='support'?'🟢 EN YAKIN DESTEK':'🔴 EN YAKIN DİRENÇ'}</h3><div class="sr-price">${fmt(level.price)}</div><div class="sr-meta">Fiyata uzaklık: <b>${pct(level.distance,2)}</b> • Kanıt yoğunluğu: <b>${level.score}</b></div><div class="sr-meta">Oluşturan kanıtlar: ${labels}</div><div class="sr-meta">${kind==='support'?'Bu bölgeye yaklaşırken alıcıların savunma yapıp yapmadığı izlenir. Altına güçlü hacimle inilirse destek zayıflamış kabul edilir.':'Bu bölgeye yaklaşırken satıcıların baskısı izlenir. Üzerine güçlü hacim ve kabul gelirse direnç kırılımı araştırılır.'}</div></div>`;
+  if(!level) return `<div class="sr-level ${kind}"><h3>${kind==='support'?'Destek':'Direnç'}</h3><div class="sr-price">Yeterli veri yok</div><div class="sr-meta">Bu seviyeyi doğrulayacak yeterli bağımsız kanıt bulunamadı.</div></div>`;
+  const labels=[...new Set(level.types)].join(" + ");
+  const interpretation=kind==='support'?`Bu bölge ${level.score} ağırlıklı kanıt puanı ve ${level.strength} ayrı seviye kaynağıyla oluşuyor. Fiyat yaklaşırken alıcıların savunması ve hacimli tepki aranır.`:`Bu bölge ${level.score} ağırlıklı kanıt puanı ve ${level.strength} ayrı seviye kaynağıyla oluşuyor. Fiyat yaklaşırken satıcıların reddi veya hacimli kırılım aranır.`;
+  return `<div class="sr-level ${kind}"><h3>${kind==='support'?'🟢 EN YAKIN GÜÇLÜ DESTEK':'🔴 EN YAKIN GÜÇLÜ DİRENÇ'}</h3><div class="sr-price">${fmt(level.price)}</div><div class="sr-meta">Fiyata uzaklık: <b>${pct(level.distance,2)}</b> • Kanıt gücü: <b>${level.score}</b>/20+ • Kaynak sayısı: <b>${level.strength}</b></div><div class="sr-meta"><b>Oluşturan kanıtlar:</b> ${labels}</div><div class="sr-meta">${interpretation}</div></div>`;
 }
 async function runSupportResistanceResearch(raw){
   const symbol=normalizeCoinInput(raw||$("srCoinSearch").value||$("symbolSearch").value||$("symbol").value); if(!symbol){alert("Bir coin sembolü gir.");return;}
-  $("srCoinSearch").value=symbol.replace("USDT",""); setStatus(`${symbol} • DESTEK/DİRENÇ ARAŞTIRMASI BAŞLIYOR…`);
+  $("srCoinSearch").value=symbol.replace("USDT",""); setStatus(`${symbol} • ÇOK KATMANLI DESTEK/DİRENÇ ARAŞTIRMASI BAŞLIYOR…`);
   const frames=[{key:"4h",label:"4 Saat"},{key:"1d",label:"Günlük"},{key:"1w",label:"Haftalık"}],out=[];
   for(const f of frames){try{const candles=await loadKlines(symbol,f.key);out.push({key:f.key,label:f.label,candles,analysis:srSignalForTf(candles)});}catch(e){out.push({key:f.key,label:f.label,error:e.message});}}
   const valid=out.filter(x=>x.analysis); if(!valid.length){$("srVerdict").className="research-verdict negative";$("srVerdict").innerHTML=`<b>ANALİZ YAPILAMADI</b><br>${out.map(x=>x.error||"").join("<br>")}`;return;}
-  const current=valid[0].analysis.last;
-  const supportCandidates=valid.flatMap(x=>x.analysis.sr.supports.slice(0,3).map(l=>({...l,tf:x.label}))).sort((a,b)=>a.distance-b.distance);
-  const resistanceCandidates=valid.flatMap(x=>x.analysis.sr.resistances.slice(0,3).map(l=>({...l,tf:x.label}))).sort((a,b)=>a.distance-b.distance);
-  const posCount=valid.reduce((n,x)=>n+x.analysis.positive.length,0),negCount=valid.reduce((n,x)=>n+x.analysis.negative.length,0);
-  const regime=posCount>negCount*1.35?"GÜÇLÜ POZİTİF YAPI":negCount>posCount*1.35?"GÜÇLÜ NEGATİF YAPI":"KARIŞIK / DENGELİ YAPI";
+  const current=valid[0].analysis.last, score=scoreEvidence(valid);
+  const supportCandidates=valid.flatMap(x=>x.analysis.sr.supports.slice(0,5).map(l=>({...l,tf:x.label}))).sort((a,b)=>a.distance-b.distance);
+  const resistanceCandidates=valid.flatMap(x=>x.analysis.sr.resistances.slice(0,5).map(l=>({...l,tf:x.label}))).sort((a,b)=>a.distance-b.distance);
+  const regime=score.net>=45?"GÜÇLÜ POZİTİF YAPI":score.net>=12?"POZİTİF GÖRÜNÜM":score.net<=-45?"GÜÇLÜ NEGATİF YAPI":score.net<=-12?"NEGATİF GÖRÜNÜM":"KARIŞIK / TEYİTSİZ";
   const cls=regime.includes("POZİTİF")?"positive":regime.includes("NEGATİF")?"negative":"neutral";
+  const dominant=score.pos>score.neg?"pozitif":"negatif";
+  const topPos=[...new Set(valid.flatMap(x=>x.analysis.positive).sort((a,b)=>b.weight-a.weight).map(x=>x.text))].slice(0,6);
+  const topNeg=[...new Set(valid.flatMap(x=>x.analysis.negative).sort((a,b)=>b.weight-a.weight).map(x=>x.text))].slice(0,6);
+  const summary=dominant==='pozitif'?`Pozitif kanıtlar ağırlık kazanıyor. ${topPos.slice(0,3).join("; ")||"Trend ve momentum tarafında olumlu sinyaller var."}.`:`Negatif kanıtlar ağırlık kazanıyor. ${topNeg.slice(0,3).join("; ")||"Trend ve momentum tarafında zayıflık var."}.`;
+  const conflict=topPos.length&&topNeg.length?`Karşı kanıt da mevcut: ${dominant==='pozitif'?topNeg[0]:topPos[0]}. Bu nedenle sonuç kesin yön tahmini değil, mevcut kanıtların ağırlıklı değerlendirmesidir.`:"";
   $("srVerdict").className=`research-verdict ${cls}`;
-  $("srVerdict").innerHTML=`<b>${symbol.replace("USDT","")}/USDT — ${regime}</b><br>Son fiyat: <b>${fmt(current)}</b><br><br><b>Sistem ne yaptı?</b> 4 Saat + Günlük + Haftalık veriyi karşılaştırdı; destek/direnç adaylarını pivotlar, VPVR POC/VAL/VAH, EMA/SMA ve Bollinger bölgeleriyle kümelendirdi; ardından RSI, MACD, Golden/Death Cross ve divergence kanıtlarını yön filtresi olarak kullandı.<br><br><b>İlk okuma:</b> ${posCount} pozitif kanıt / ${negCount} negatif kanıt. Bu bir emir değildir; kanıtların ağırlıklı yorumudur.`;
+  $("srVerdict").innerHTML=`<b>${symbol.replace("USDT","")}/USDT — ${regime}</b><br>Son fiyat: <b>${fmt(current)}</b> • Kanıt dengesi: <b>${score.net>0?'+':''}${score.net}/100</b> • Güven: <b>${score.confidence}%</b><br><br><b>🧠 SİSTEMİN YORUMU</b><br>${summary}<br>${conflict}<br><br><b>Nasıl hesaplandı?</b> 4H + günlük + haftalık trend, momentum, cross, divergence ve destek/direnç yapısı ayrı kanıt grupları olarak puanlandı. Aynı göstergenin farklı zaman dilimlerindeki tekrarı tek başına skoru sınırsız şişiremez. Bu bir emir veya kesin fiyat tahmini değildir.`;
   $("srLevels").innerHTML=renderSrLevel(supportCandidates[0],"support",current)+renderSrLevel(resistanceCandidates[0],"resistance",current);
-  const allPos=[...new Set(valid.flatMap(x=>x.analysis.positive))].slice(0,10),allNeg=[...new Set(valid.flatMap(x=>x.analysis.negative))].slice(0,10);
-  $("srEvidence").innerHTML=`<div class="helpbox"><h3>🟢 Pozitif kanıtlar</h3><ul class="reason-list">${allPos.map(x=>`<li>${x}</li>`).join("")||"<li>Belirgin pozitif kanıt yok.</li>"}</ul></div><div class="helpbox"><h3>🔴 Negatif kanıtlar</h3><ul class="reason-list">${allNeg.map(x=>`<li>${x}</li>`).join("")||"<li>Belirgin negatif kanıt yok.</li>"}</ul></div>`;
-  $("srTimeframes").innerHTML=valid.map(x=>{const a=x.analysis,s=a.positive.length>=a.negative.length?"POZİTİF": "NEGATİF";return `<div class="sr-tf"><h3>${x.label} • ${s}</h3><div>Fiyat <b>${fmt(a.last)}</b> • RSI <b>${fmt(a.rsi,1)}</b></div><div class="sr-bar"><span style="width:${Math.min(100,a.positive.length*12)}%"></span></div><div><b>Destek:</b> ${a.sr.supports.slice(0,3).map(l=>fmt(l.price)).join(" • ")||"—"}</div><div><b>Direnç:</b> ${a.sr.resistances.slice(0,3).map(l=>fmt(l.price)).join(" • ")||"—"}</div><div class="sr-meta">${a.div.bullishRegular||a.div.bullishHidden?"Bullish divergence var. ":""}${a.div.bearishRegular||a.div.bearishHidden?"Bearish divergence var. ":""}${a.crosses.filter(c=>c.type!=='NONE').map(c=>`${c.fast}/${c.slow} ${c.type==='GOLDEN'?'Golden':'Death'} Cross`).join(" • ")||"Yeni cross yok."}</div></div>`}).join("");
-  setStatus(`${symbol} • DESTEK/DİRENÇ ANALİZİ TAMAMLANDI`);
+  const allPos=[...new Set(valid.flatMap(x=>x.analysis.positive).sort((a,b)=>b.weight-a.weight).map(x=>x.text))].slice(0,12),allNeg=[...new Set(valid.flatMap(x=>x.analysis.negative).sort((a,b)=>b.weight-a.weight).map(x=>x.text))].slice(0,12);
+  $("srEvidence").innerHTML=`<div class="helpbox"><h3>🟢 Pozitif kanıtlar <span class="muted">(${score.pos} ağırlıklı puan)</span></h3><ul class="reason-list">${allPos.map(x=>`<li>${x}</li>`).join("")||"<li>Belirgin pozitif kanıt yok.</li>"}</ul></div><div class="helpbox"><h3>🔴 Negatif kanıtlar <span class="muted">(${score.neg} ağırlıklı puan)</span></h3><ul class="reason-list">${allNeg.map(x=>`<li>${x}</li>`).join("")||"<li>Belirgin negatif kanıt yok.</li>"}</ul></div>`;
+  $("srTimeframes").innerHTML=valid.map(x=>{const a=x.analysis,s=a.positive.reduce((n,e)=>n+e.weight,0)>=a.negative.reduce((n,e)=>n+e.weight,0)?"POZİTİF":"NEGATİF";const p=Math.min(100,a.positive.reduce((n,e)=>n+e.weight,0)*4),n=Math.min(100,a.negative.reduce((n,e)=>n+e.weight,0)*4);return `<div class="sr-tf"><h3>${x.label} • ${s}</h3><div>Fiyat <b>${fmt(a.last)}</b> • RSI <b>${fmt(a.rsi,1)}</b> • ATR <b>${fmt(a.sr.atr)}</b></div><div class="sr-bar"><span style="width:${p}%"></span></div><div class="sr-bar red"><span style="width:${n}%"></span></div><div><b>Destek:</b> ${a.sr.supports.slice(0,3).map(l=>fmt(l.price)).join(" • ")||"—"}</div><div><b>Direnç:</b> ${a.sr.resistances.slice(0,3).map(l=>fmt(l.price)).join(" • ")||"—"}</div><div class="sr-meta"><b>Önemli kanıtlar:</b> ${[...a.positive,...a.negative].sort((u,v)=>v.weight-u.weight).slice(0,5).map(e=>e.text).join(" • ")||"Yeterli kanıt yok."}</div></div>`}).join("");
+  setStatus(`${symbol} • DESTEK/DİRENÇ ARAŞTIRMASI TAMAMLANDI`);
 }
 
 function bindImprovedCoinSearch(){
