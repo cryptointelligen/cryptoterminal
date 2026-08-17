@@ -30,7 +30,7 @@ body {
     radial-gradient(circle at 90% 10%, #17203c 0, transparent 26%),
     var(--bg);
   color:var(--text);
-  font:14px/1.55 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  font:16px/1.65 Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
 }
 button,input,select { font:inherit; }
 button { cursor:pointer; }
@@ -62,9 +62,9 @@ button { cursor:pointer; }
 }
 .eyebrow { color:var(--cyan); font-size:11px; font-weight:900; letter-spacing:.15em; }
 h1 { font-size:34px; margin:5px 0 8px; }
-h2 { font-size:17px; margin:0 0 12px; }
-h3 { font-size:13px; margin:0 0 7px; }
-.muted { color:var(--muted); }
+h2 { font-size:20px; margin:0 0 12px; }
+h3 { font-size:15px; margin:0 0 7px; }
+.muted { color:var(--muted); font-size:15px; }
 .controls {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -83,7 +83,7 @@ h3 { font-size:13px; margin:0 0 7px; }
 }
 .controls button.primary { background:#144d4b; border-color:#2e9286; }
 .auth {
-  display:flex;
+  display:none;
   flex-wrap:wrap;
   gap:7px;
   margin-top:18px;
@@ -171,8 +171,8 @@ h3 { font-size:13px; margin:0 0 7px; }
   justify-content:space-between;
   gap:10px;
 }
-.factor p { margin:7px 0 0; color:var(--muted); }
-.factor .detail { margin-top:7px; font-size:12px; color:#b9cbd2; }
+.factor p { margin:8px 0 0; color:var(--text); font-size:15px; }
+.factor .detail { margin-top:8px; font-size:14px; color:#c9d8de; }
 .bar {
   height:6px;
   margin-top:10px;
@@ -187,14 +187,14 @@ h3 { font-size:13px; margin:0 0 7px; }
 }
 .table th,
 .table td {
-  padding:9px 8px;
+  padding:12px 10px;
   border-bottom:1px solid #1d3038;
   text-align:left;
   vertical-align:top;
 }
 .table th {
   color:var(--muted);
-  font-size:10px;
+  font-size:12px;
   text-transform:uppercase;
   letter-spacing:.06em;
 }
@@ -275,7 +275,7 @@ h3 { font-size:13px; margin:0 0 7px; }
   gap:6px 12px;
 }
 .kv div:nth-child(odd) { color:var(--muted); }
-.small { font-size:11px; }
+.small { font-size:13px; }
 .badge {
   display:inline-flex;
   padding:4px 8px;
@@ -284,6 +284,20 @@ h3 { font-size:13px; margin:0 0 7px; }
   font-size:10px;
 }
 .full { width:100%; }
+
+.universe-table td, .universe-table th { padding:14px 10px; }
+.universe-table tr.clickable { cursor:pointer; }
+.universe-table tr.clickable:hover { background:#10222a; }
+.signal-badge { display:inline-flex; padding:6px 10px; border-radius:999px; font-weight:800; font-size:13px; }
+.signal-badge.positive { background:#0d3027; border:1px solid #216a53; }
+.signal-badge.negative { background:#35151b; border:1px solid #7a303d; }
+.signal-badge.neutral { background:#302711; border:1px solid #735b26; }
+.helpbox { padding:16px; border:1px solid #2b4752; border-radius:14px; background:#0a181f; }
+.helpbox p { margin:8px 0; color:#cbd9de; font-size:15px; }
+.read-row { display:grid; grid-template-columns:170px 1fr; gap:10px; padding:10px 0; border-bottom:1px solid #1c3038; }
+.read-row:last-child { border-bottom:0; }
+.read-label { color:#8fa6af; font-weight:700; }
+
 @media(max-width:1250px) {
   .metric-grid { grid-template-columns:repeat(4,1fr); }
   .hero,.grid-2 { grid-template-columns:1fr; }
@@ -357,6 +371,35 @@ h3 { font-size:13px; margin:0 0 7px; }
   <div class="metric"><small>CVD</small><strong id="cvdStatus">—</strong></div>
   <div class="metric"><small>Order Book</small><strong id="bookStatus">—</strong></div>
   <div class="metric"><small>Veri kalitesi</small><strong id="dataQuality">—</strong></div>
+</section>
+
+<section class="panel">
+  <h2>Coin Tarama Merkezi — Öncelikli Adaylar</h2>
+  <div class="helpbox">
+    <p><b>Burada ne görüyorsun?</b> Sistem yalnızca 8 coin göstermez. Tarama, geniş bir coin evrenini aynı metodolojiyle puanlar ve en güçlü pozitif/negatif görünümleri üste taşır.</p>
+    <p><b>Önemli:</b> “Güçlü Pozitif Görünüm” bir emir değildir. Hangi teknik kanıtların bu sonuca katkı verdiğini görmek için satıra tıklayabilirsin.</p>
+  </div>
+  <div style="overflow:auto;margin-top:14px">
+    <table class="table universe-table">
+      <thead><tr><th>Coin</th><th>Görünüm</th><th>Skor</th><th>111 DMA</th><th>RSI</th><th>Trend</th><th>Öne çıkan neden</th></tr></thead>
+      <tbody id="universeRows"><tr><td colspan="7" class="muted">Universe Taraması başlatılmadı.</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Yeni Kullanıcı İçin: Sonucu Nasıl Okuyacaksın?</h2>
+  <div class="helpbox">
+    <div class="read-row"><div class="read-label">Güçlü Pozitif Görünüm</div><div>Birden fazla bağımsız veri grubunun aynı yönde birleştiğini anlatır. Örneğin fiyatın 111 DMA ve 200 SMA üzerinde olması, EMA ribbon'ın yukarı hizalanması, momentumun pozitif olması ve CVD'nin agresif alıcıları desteklemesi aynı hikâyeyi güçlendirebilir.</div></div>
+    <div class="read-row"><div class="read-label">Güçlü Negatif Görünüm</div><div>Trend, momentum, hacim veya likidite tarafında aşağı yönlü kanıtların ağır bastığını anlatır. Bu ifade otomatik satış emri anlamına gelmez.</div></div>
+    <div class="read-row"><div class="read-label">Agresif Buy</div><div>Market alıcıları ask tarafındaki likiditeyi tüketiyor demektir. CVD ve tape reading ile birlikte görülüyorsa alıcı baskısının gerçekten işlem akışına yansıdığına dair kanıt güçlenir.</div></div>
+    <div class="read-row"><div class="read-label">Agresif Sell</div><div>Market satıcıları bid tarafındaki likiditeyi tüketiyor demektir. Yalnızca kırmızı hacim görmekten farklıdır; işlem akışının hangi tarafça agresif biçimde yürütüldüğünü anlatır.</div></div>
+    <div class="read-row"><div class="read-label">Iceberg şüphesi</div><div>Aynı fiyat seviyesinde görünür likiditenin zaman içinde tekrar tekrar yenilenmesi gibi davranışlar aranır. Tek bir order-book görüntüsü gerçek iceberg emrini kanıtlamaz.</div></div>
+    <div class="read-row"><div class="read-label">Likidite Sweep</div><div>Fiyatın belirgin tepe/dip veya likidite kümesini hızlı biçimde süpürmesi izlenir. Sonrasında geri alma veya devam hareketi olup olmadığı ayrıca değerlendirilir.</div></div>
+    <div class="read-row"><div class="read-label">111 DMA</div><div>Fiyat 111 günlük ortalamanın üzerindeyse uzun vadeli yapı açısından pozitif filtre, altındaysa negatif filtre olarak değerlendirilir. Tek başına yeterli değildir.</div></div>
+    <div class="read-row"><div class="read-label">VPVR / POC</div><div>Hacmin yoğunlaştığı fiyatları gösterir. POC çevresi kabul/denge bölgesi, düşük hacimli alanlar ise fiyatın daha hızlı geçebileceği bölgeler olarak yorumlanabilir.</div></div>
+    <div class="read-row"><div class="read-label">Z-score + Bollinger Width</div><div>Z-score fiyatın kendi ortalamasından kaç standart sapma uzaklaştığını; Bollinger Width ise volatilitenin sıkışıp sıkışmadığını gösterir. Birlikte aşırı uzama veya sıkışma senaryolarını ayırmaya yardım eder.</div></div>
+  </div>
 </section>
 
 <section class="panel">
@@ -3318,6 +3361,35 @@ function drawLineChart(canvas, candles, analysis) {
   }
 }
 
+function explainFactor(item) {
+  const name = item.name || "";
+  const map = [
+    [/111 DMA/i, "Fiyat 111 günlük ortalamanın üstündeyse uzun vadeli trend filtresi desteklenir; altındaysa baskı artar."],
+    [/EMA Ribbon/i, "Kısa ve orta vadeli EMA'ların aynı yönde sıralanması trendin hizalandığını, birbirine yaklaşması ise kararsızlık/sıkışmayı anlatır."],
+    [/SMA 20\/50\/100\/200/i, "Birden fazla hareketli ortalamanın aynı yönde dizilmesi trend kalitesini artırır; fiyat ortalamaların arasında ise yapı karışıktır."],
+    [/Golden \/ Death Cross/i, "50/200 gibi kesişimler orta-uzun vadeli trend değişimini teyit etmekte kullanılır ve gecikmeli oldukları için tek başına erken sinyal sayılmaz."],
+    [/Divergence/i, "Fiyat yeni tepe/dip yaparken RSI veya momentum bunu doğrulamıyorsa uyumsuzluk vardır. Hidden divergence daha çok mevcut trendin devam ihtimalini araştırır."],
+    [/MACD/i, "MACD çizgisi, sinyal çizgisi ve histogramın yönü momentumun hızlanıp yavaşladığını gösterir."],
+    [/ADX/i, "ADX hareketin yönünü değil trend gücünü ölçer; +DI/-DI ile birlikte okununca yön hakkında daha anlamlıdır."],
+    [/CVD/i, "CVD ve delta agresif market alıcılarının mı yoksa agresif market satıcılarının mı baskın olduğunu anlamaya yardım eder."],
+    [/Order Book/i, "Bid/ask likidite dengesini gösterir. Büyük görünen emirlerin spoofing olabileceği unutulmamalı; zaman içindeki davranış daha değerlidir."],
+    [/Tape Reading/i, "Gerçekleşen işlemlerin yönünü ve yoğunluğunu okuyarak hacmin sadece büyüklüğünü değil, hangi tarafın agresif olduğunu anlamaya çalışır."],
+    [/VWAP/i, "VWAP fiyatı hacim ağırlıklı ortalama işlem fiyatıyla karşılaştırır; fiyatın bu referansın üstünde/altında kalması kısa-orta vadeli kabulü anlamaya yardım eder."],
+    [/TWAP/i, "TWAP zaman ağırlıklı ortalama fiyatı gösterir ve fiyatın ortalama işlem maliyetinden sapmasını izlemek için kullanılır."],
+    [/Bollinger/i, "Bant genişliği daralıyorsa volatilite sıkışması, genişliyorsa hareketin hızlandığı bir rejim söz konusu olabilir. Z-score aşırı uzaklığı ölçer."],
+    [/Keltner/i, "Keltner kanalı ve ATR volatilite rejimini izler; Bollinger ile birlikte sıkışma ve açılma dönemlerini ayırmaya yardım eder."],
+    [/Momentum ROC/i, "Fiyatın belirli bir dönem içindeki değişim hızını ölçer. Pozitif hızlanma yükseliş momentumunu, negatif hızlanma düşüş baskısını destekler."],
+    [/MFI/i, "Fiyat ve hacmi birlikte kullanarak para giriş/çıkış baskısını tahmin eder."],
+    [/CMF/i, "Kapanışın mum aralığındaki konumu ile hacmi birleştirerek birikim/dağıtım baskısını araştırır."],
+    [/Hurst/i, "Hurst 0.5 civarında rastgeleliğe yakın; daha yüksek değerler persistans/trend, daha düşük değerler mean-reversion eğilimi gösterebilir."],
+    [/Volume Anomaly/i, "Normal hacimden belirgin sapmaları bulur. Tek başına yön söylemez; fiyat ve delta ile birlikte okunmalıdır."],
+    [/Ichimoku/i, "Bulut, Tenkan/Kijun ve fiyat ilişkisi trend, destek/direnç ve momentumun birlikte değerlendirilmesini sağlar."],
+    [/Supertrend/i, "ATR tabanlı trend filtresidir. Fiyatın trend çizgisinin üstünde/altında olması yön filtresi olarak kullanılır."],
+  ];
+  const hit = map.find(([re]) => re.test(name));
+  return hit ? hit[1] : "Bu faktör composite puanın bir parçasıdır; diğer bağımsız kanıtlarla aynı yönde olup olmadığına bakılır.";
+}
+
 function renderFactors(analysis) {
   $("factorGrid").innerHTML =
     analysis.factors.map(
@@ -3345,10 +3417,9 @@ function renderFactors(analysis) {
                 ${item.score}
               </span>
             </div>
-            <p>${item.reason}</p>
-            <div class="detail">
-              ${item.detail}
-            </div>
+            <p><b>Ne söylüyor?</b> ${item.reason}</p>
+            <div class="detail"><b>Veri:</b> ${item.detail}</div>
+            <div class="detail"><b>Nasıl yorumlanır?</b> ${explainFactor(item)}</div>
             <div class="bar">
               <i style="width:${width}%"></i>
             </div>
@@ -4235,6 +4306,14 @@ function openFactor(factorData) {
         <div>${factorData.reason}</div>
       </div>
 
+      <div class="helpbox" style="margin-top:14px">
+        <b>Bu veri neden önemli?</b>
+        <p>${factorData.detail}</p>
+        <p><b>Pratik okuma:</b> ${explainFactor(factorData)}</p>
+        <p><b>Kararı güçlendiren şey:</b> Aynı yönde en az birkaç bağımsız kanıtın ve 4H/1D/1W yapısının birbirini doğrulaması.</p>
+        <p><b>Kararı zayıflatan şey:</b> Teknik gösterge pozitifken CVD, order-flow, likidite, türevler veya haber akışının ters yönde olması.</p>
+      </div>
+
       <div class="ok" style="margin-top:14px">
         <b>Bu ne demek?</b><br>
         ${factorData.detail}
@@ -4462,87 +4541,75 @@ function initEvents() {
 
 async function scanUniverse() {
   const symbols = [
-    "BTCUSDT",
-    "ETHUSDT",
-    "SOLUSDT",
-    "BNBUSDT",
-    "XRPUSDT",
-    "ADAUSDT",
-    "DOGEUSDT",
-    "AVAXUSDT",
-    "LINKUSDT",
-    "DOTUSDT",
+    "BTCUSDT","ETHUSDT","SOLUSDT","BNBUSDT","XRPUSDT","ADAUSDT","DOGEUSDT","AVAXUSDT","LINKUSDT","DOTUSDT",
+    "LTCUSDT","BCHUSDT","ATOMUSDT","NEARUSDT","APTUSDT","ARBUSDT","OPUSDT","INJUSDT","SUIUSDT","SEIUSDT",
+    "FILUSDT","ETCUSDT","XLMUSDT","HBARUSDT","TRXUSDT","UNIUSDT","AAVEUSDT","MATICUSDT","PEPEUSDT","SHIBUSDT"
   ];
-
   const results = [];
+  setStatus(`UNIVERSE TARAMASI • 0/${symbols.length}`);
+  $("universeRows").innerHTML = `<tr><td colspan="7" class="muted">30 coin taranıyor. Her coin aynı çok-faktörlü modelden geçiriliyor…</td></tr>`;
 
-  setStatus(
-    "UNIVERSE TARAMASI BAŞLADI…"
-  );
-
-  for (const symbol of symbols) {
+  for (let i=0; i<symbols.length; i++) {
+    const symbol = symbols[i];
     try {
-      const candles =
-        await loadKlines(
-          symbol,
-          state.timeframe
-        );
-
-      const analysis =
-        compositeFactors(
-          candles,
-          null,
-          []
-        );
-
-      const score =
-        aggregateScore(
-          analysis.factors
-        );
-
+      const candles = await loadKlines(symbol, state.timeframe);
+      const analysis = compositeFactors(candles, null, []);
+      const score = aggregateScore(analysis.factors);
+      const topPositive = [...analysis.factors].filter(f=>f.score>0).sort((a,b)=>b.score-a.score)[0];
+      const topNegative = [...analysis.factors].filter(f=>f.score<0).sort((a,b)=>a.score-b.score)[0];
+      const leading = score.normalized >= 0 ? topPositive : topNegative;
       results.push({
-        symbol,
-        score:score.normalized,
-        regime:score.regime,
-        rsi:
-          analysis.derived.adaptive.selected.value,
-        dma:
-          candles.at(-1).close >
-          analysis.derived.structure.dma111,
+        symbol, score:score.normalized, regime:score.regime, confidence:score.confidence,
+        rsi:analysis.derived.adaptive.selected.value,
+        dma:candles.at(-1).close > analysis.derived.structure.dma111,
+        trend:analysis.derived.structure.bias,
+        reason:leading ? `${leading.name}: ${leading.reason}` : "Kanıtlar karışık.",
+        factors:analysis.factors
       });
-    } catch {
-      results.push({
-        symbol,
-        score:null,
-        regime:"VERİ YOK",
-        rsi:null,
-        dma:null,
-      });
+    } catch (error) {
+      results.push({symbol,score:null,regime:"VERİ YOK",confidence:0,rsi:null,dma:null,trend:"—",reason:error.message,factors:[]});
     }
+    setStatus(`UNIVERSE TARAMASI • ${i+1}/${symbols.length}`);
   }
 
-  results.sort(
-    (a,b) =>
-      (b.score ?? -999) -
-      (a.score ?? -999)
-  );
+  results.sort((a,b)=>(b.score ?? -999)-(a.score ?? -999));
+  $("universeRows").innerHTML = results.map((item,index)=>{
+    const cls = item.score >= 35 ? "positive" : item.score <= -35 ? "negative" : "neutral";
+    const badge = item.regime === "VERİ YOK" ? "neutral" : cls;
+    return `<tr class="clickable" data-universe-index="${index}">
+      <td><b>${item.symbol.replace("USDT","")}</b>/USDT</td>
+      <td><span class="signal-badge ${badge}">${item.regime}</span></td>
+      <td class="${cls}"><b>${item.score === null ? "—" : fmt(item.score,0)+"/100"}</b></td>
+      <td>${item.dma === true ? "ÜZERİNDE" : item.dma === false ? "ALTINDA" : "—"}</td>
+      <td>${fmt(item.rsi,1)}</td>
+      <td>${item.trend}</td>
+      <td>${item.reason}</td>
+    </tr>`;
+  }).join("");
 
-  const best =
-    results[0];
+  document.querySelectorAll("[data-universe-index]").forEach(row=>{
+    row.onclick=()=>{
+      const item=results[Number(row.dataset.universeIndex)];
+      if(!item || !item.factors.length) return;
+      $("symbol").value=item.symbol;
+      state.symbol=item.symbol;
+      const score=aggregateScore(item.factors);
+      openFactor({
+        name:`${item.symbol.replace("USDT","")}/USDT — Neden ${score.regime}?`,
+        group:"Universe açıklaması", score:score.normalized, confidence:score.confidence,
+        reason:`Bu coin ${item.reason}`,
+        detail:item.factors.map(f=>`${f.name}: ${f.score>0?"pozitif":"negatif/karışık"} — ${f.reason}`).join("<br>")
+      });
+    };
+  });
 
-  if (best) {
-    $("symbol").value =
-      best.symbol;
-
-    state.symbol =
-      best.symbol;
-
+  const best = results.find(x=>x.score!==null);
+  if(best){
+    $("symbol").value=best.symbol;
+    state.symbol=best.symbol;
     await runFullAnalysis();
   }
-
-  setStatus(
-    "UNIVERSE TARAMASI TAMAMLANDI"
-  );
+  setStatus(`UNIVERSE TARAMASI TAMAMLANDI • ${results.length} COIN`);
 }
 
 initAuth();
