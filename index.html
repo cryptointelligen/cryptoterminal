@@ -309,6 +309,20 @@ h3 { font-size:15px; margin:0 0 7px; }
 }
 
 </style>
+
+<style id="interpretation-upgrade">
+.interpret-card{border:1px solid #2d4855;background:#0b171d;border-radius:14px;padding:18px;margin:12px 0;font-size:16px}
+.interpret-card h3{font-size:19px;margin:0 0 8px;color:#dff7ea}
+.interpret-card .big-status{font-size:21px;font-weight:800;margin:5px 0 10px}
+.interpret-card .meaning{color:#e8f0f3;margin:7px 0}
+.interpret-card .why{color:#b9cbd2;margin:7px 0}
+.interpret-card .effect{font-weight:700;margin-top:9px}
+.interpret-card .source{font-size:13px;color:#8da4ad;margin-top:8px}
+.explain-table td:nth-child(1){font-weight:700;width:22%}.explain-table td:nth-child(2){font-size:18px;font-weight:800;width:18%}.explain-table td:nth-child(3){width:60%}
+.beginner-note{font-size:17px;line-height:1.75;background:#102027;border-left:4px solid #8dd8b0;padding:16px 18px;border-radius:10px;margin:12px 0}
+.verdict-box{font-size:18px;line-height:1.7;padding:20px;border-radius:14px;margin-bottom:16px}
+.verdict-box.positive{border:1px solid #356d55;background:#0d2119}.verdict-box.negative{border:1px solid #75454d;background:#241217}.verdict-box.neutral{border:1px solid #5c5960;background:#17181d}
+</style>
 </head>
 <body>
 
@@ -379,6 +393,7 @@ h3 { font-size:15px; margin:0 0 7px; }
     <p><b>Burada ne görüyorsun?</b> Sistem yalnızca 8 coin göstermez. Tarama, geniş bir coin evrenini aynı metodolojiyle puanlar ve en güçlü pozitif/negatif görünümleri üste taşır.</p>
     <p><b>Önemli:</b> “Güçlü Pozitif Görünüm” bir emir değildir. Hangi teknik kanıtların bu sonuca katkı verdiğini görmek için satıra tıklayabilirsin.</p>
   </div>
+  <div class="beginner-note"><b>İlk bakışta ne yapmalısın?</b> Yeşil bir sonuç, sistemin birden fazla veri grubunda pozitif kanıt gördüğü anlamına gelir; kırmızı sonuçta negatif kanıtlar ağır basar. <b>Coin satırına tıkla:</b> sistem hangi göstergelerin sonucu desteklediğini, hangilerinin karşı çıktığını ve her birinin neden önemli olduğunu açar. Ham rakam tek başına karar değildir.</div>
   <div style="overflow:auto;margin-top:14px">
     <table class="table universe-table">
       <thead><tr><th>Coin</th><th>Görünüm</th><th>Skor</th><th>111 DMA</th><th>RSI</th><th>Trend</th><th>Öne çıkan neden</th></tr></thead>
@@ -406,6 +421,8 @@ h3 { font-size:15px; margin:0 0 7px; }
   <h2>Kararın Kanıt Zinciri</h2>
   <div id="summaryExplain" class="explain"></div>
 </section>
+
+<section class="panel"><h2>Bu Sonuç Bana Ne Söylüyor?</h2><div class="beginner-note">Sistem bir coin için sadece “güçlü” dememeli. Buradaki amaç <b>ne oldu → neden önemli → sonucu hangi kanıtlar destekliyor → hangi kanıtlar zayıflatıyor</b> zincirini tek bakışta göstermek. Ayrıntılı kanıtlar aşağıdaki kartlarda açılır.</div><div id="plainLanguageVerdict"></div></section>
 
 <section class="grid-2">
   <div class="panel">
@@ -3540,6 +3557,13 @@ function renderSummary(analysis, mtf) {
   `;
 }
 
+function renderPlainLanguageVerdict(analysis){
+ const s=aggregateScore(analysis.factors); const cls=s.regime.includes("POZİTİF")?"positive":s.regime.includes("NEGATİF")?"negative":"neutral";
+ const pos=analysis.factors.filter(f=>f.score>0).sort((a,b)=>b.score-a.score).slice(0,3); const neg=analysis.factors.filter(f=>f.score<0).sort((a,b)=>a.score-b.score).slice(0,3);
+ const lead=s.regime.includes("POZİTİF")?pos:neg;
+ $("plainLanguageVerdict").innerHTML=`<div class="verdict-box ${cls}"><div class="big-status">${s.regime} • ${fmt(s.normalized,0)}/100</div><p><b>Sade Türkçesi:</b> ${lead.length?lead.map(x=>x.name).join(", ")+" tarafındaki kanıtlar bu görünümün ana nedenleri.":"Henüz yeterli bağımsız kanıt aynı yönde birleşmiyor."}</p><p><b>En güçlü nedenler:</b> ${lead.map(x=>x.reason).join(" • ")||"Kanıtlar karışık."}</p><p><b>Dikkat edilmesi gereken karşı kanıtlar:</b> ${neg.length?neg.map(x=>x.name+": "+x.reason).join(" • "):"Belirgin karşı sinyal yok."}</p><p><b>Önemli:</b> Bu bölüm bir emir üretmez; mevcut verilerin birlikte oluşturduğu araştırma görünümünü açıklar.</p></div>`;
+}
+
 function renderMtf(mtf) {
   $("mtfRows").innerHTML =
     mtf.rows.map(
@@ -3578,6 +3602,55 @@ function renderMomentum(analysis) {
       (row) =>
         `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`
     ).join("");
+}
+
+function plainDirection(score){ return score>0 ? "POZİTİF" : score<0 ? "NEGATİF" : "NÖTR"; }
+function flowExplanation(d){
+  const cvd=d.cvd||{};
+  const buy=Number(cvd.aggressiveBuyPct||0), sell=Number(cvd.aggressiveSellPct||0);
+  const delta=Number(cvd.recentChange||0);
+  if(buy>sell+5) return {status:"AGGRESSIVE BUY • ALICI BASKISI", cls:"positive", meaning:"Market alıcıları ask tarafındaki görünür likiditeyi daha fazla tüketiyor. Bu, pasif emir beklemekten farklı olarak gerçekten agresif alım akışının olduğunu gösterir.", why:"CVD'nin pozitif olması ve agresif alıcı payının yükselmesi, fiyat hareketiyle birlikte görülürse yukarı yönlü akış kanıtını güçlendirir.", effect:"Pozitif kanıt: +order-flow ağırlığı"};
+  if(sell>buy+5) return {status:"AGGRESSIVE SELL • SATICI BASKISI", cls:"negative", meaning:"Market satıcıları bid tarafındaki görünür likiditeyi daha fazla tüketiyor. Yani işlemler pasif satış beklemek yerine piyasaya vurarak gerçekleşiyor.", why:"Negatif CVD, fiyatın da zayıflamasıyla birlikte görülüyorsa aşağı yönlü baskı daha anlamlıdır. Fiyat düşmüyorsa satışların emiliyor olma ihtimali ayrıca incelenmelidir.", effect:"Negatif kanıt: -order-flow ağırlığı"};
+  return {status:"DENGELİ AKIŞ", cls:"neutral", meaning:"Agresif alıcı ve satıcı akışı arasında belirgin üstünlük yok.", why:"Tek başına bu veri yön seçmek için yeterli değil; fiyat yapısı, likidite ve diğer faktörlerle birlikte okunmalı.", effect:"Nötr kanıt"};
+}
+
+function renderMicroExplained(analysis){
+  const d=analysis.derived, book=d.book||{}, tape=d.tape||{}, flow=flowExplanation(d);
+  const cvd=Number(d.cvd?.recentChange||0);
+  const buy=tape.available?Number(tape.buyPct||0):Number(d.cvd?.aggressiveBuyPct||0);
+  const sell=tape.available?Number(tape.sellPct||0):Number(d.cvd?.aggressiveSellPct||0);
+  const rows=[
+    ["CVD",fmt(cvd,2),`<b>${flow.status}</b><br>${flow.meaning}<br><span class="muted">Neden önemli:</span> ${flow.why}`],
+    ["Agresif Buy",pct(buy,1),buy>sell+5?"Alıcı market emirleri baskın. Ask likiditesi tüketiliyor.":"Alıcı tarafında belirgin üstünlük yok."],
+    ["Agresif Sell",pct(sell,1),sell>buy+5?"Satıcı market emirleri baskın. Bid likiditesi tüketiliyor.":"Satıcı tarafında belirgin üstünlük yok."],
+    ["Tape trades",tape.available?fmt(tape.trades,0):"Canlı akış bekleniyor",tape.available?"Son gerçekleşen işlemlerin akış yönünü okumaya yarar.":"Canlı aggTrade gelmeden gerçek tape reading yapılamaz; mevcut değer proxy'dir."],
+    ["Bid / Ask imbalance",book.available?pct(book.imbalance*100,2):"—",book.available?(book.imbalance>0.15?"Görünen likidite bid tarafında daha yoğun.":book.imbalance<-0.15?"Görünen likidite ask tarafında daha yoğun.":"Görünen defter dengeli."):"Canlı order book bekleniyor."],
+    ["Spread",book.available?pct(book.spread,4):"—",book.available?"Alış ve satış arasındaki anlık fiyat farkıdır. Dar spread daha likit, geniş spread daha maliyetli işlem ortamına işaret edebilir.":"Order book verisi olmadan hesaplanamaz."]
+  ];
+  $("microTable").innerHTML=`<tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody>`;
+  const host=$("microTable").parentElement;
+  let box=document.getElementById("microInterpretation");
+  if(!box){box=document.createElement("div");box.id="microInterpretation";host.appendChild(box);}
+  box.innerHTML=`<div class="interpret-card ${flow.cls}"><h3>Emir akışının sade Türkçesi</h3><div class="big-status">${flow.status}</div><div class="meaning">${flow.meaning}</div><div class="why"><b>Bu veri neden önemli?</b> ${flow.why}</div><div class="effect">${flow.effect}</div><div class="source">Not: CVD/aggTrade verisi canlı akış yoksa yaklaşık proxy olarak değerlendirilir.</div></div>`;
+}
+
+function renderLiquidityExplained(analysis){
+ const candles=state.candles[state.timeframe], levels=liquiditySweeps(candles), clusters=retailStopClusters(candles), history=state.bookHistory||[], iceberg=icebergSuspicion(history);
+ const upper=levels.filter(x=>x.type==="upper").map(x=>fmt(x.price)), lower=levels.filter(x=>x.type==="lower").map(x=>fmt(x.price));
+ let icebergText=iceberg.score>60?"Aynı seviyede yenilenen likidite davranışı dikkat çekiyor; olası iceberg davranışı araştırılmalı.":"Şu an kesin veya güçlü iceberg kanıtı yok. Yeterli zaman serisi oluşmadan büyük gizli emir var denmemeli.";
+ const rows=[
+ ["Üst likidite",upper.join(", ")||"Belirgin seviye yok",upper.length?"Fiyatın üzerinde izlenen swing-high / likidite bölgeleri. Bu seviyeler kırılırsa yukarıdaki emir yoğunluğu ve olası stop kümeleri izlenir.":"Şu an belirgin üst likidite kümesi çıkarılamadı."],
+ ["Alt likidite",lower.join(", ")||"Belirgin seviye yok",lower.length?"Fiyatın altında izlenen swing-low / likidite bölgeleri. Fiyat burayı kısa süreli süpürüp geri alırsa bullish sweep ihtimali araştırılır.":"Şu an belirgin alt likidite kümesi çıkarılamadı."],
+ ["Retail stop kümeleri",clusters.length,clusters.length?`Yaklaşık ${clusters.length} swing/equal high-low kümesi bulundu. Bunlar gerçek yatırımcı stop emirlerinin kanıtı değildir; stopların kümelenebileceği tahmini bölgeler olarak izlenir.`:"Belirgin eşit tepe/dip kümesi bulunamadı."],
+ ["Liquidity sweep",levels.length,levels.length?"Likidite seviyelerinin süpürülmüş olabileceği hareketler bulundu. Devam mı yoksa hızlı geri alma mı olduğuna bakılmalı.":"Sweep kanıtı zayıf; yalnızca seviye sayısı üzerinden sonuç çıkarılmamalı."],
+ ["Iceberg",iceberg.status,icebergText],
+ ["Iceberg score",fmt(iceberg.score,0)+"/100",iceberg.score>60?"Olası yenilenen emir davranışı var; gerçek iceberg teyidi için zaman içinde order-book/trade eşleşmesi gerekir.":"0 olması 'iceberg kesinlikle yok' demek değildir; yalnızca mevcut verinin kanıt üretmediği anlamına gelir."]
+ ];
+ $("liquidityTable").innerHTML=`<tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody>`;
+ $("upperLiquidity").textContent=upper.join(" • ")||"Belirgin üst seviye yok"; $("lowerLiquidity").textContent=lower.join(" • ")||"Belirgin alt seviye yok"; $("stopClusters").textContent=clusters.length?`${clusters.length} potansiyel stop kümesi • ${clusters.slice(-5).map(x=>fmt(x.price)).join(" • ")}`:"Belirgin küme bulunamadı.";
+ const host=$("liquidityTable").parentElement; let box=document.getElementById("liquidityInterpretation"); if(!box){box=document.createElement("div");box.id="liquidityInterpretation";host.appendChild(box);}
+ const sweep=levels.length?{cls:"positive",status:"LİKİDİTE HAREKETİ İZLENİYOR",text:"Fiyatın belirgin swing seviyeleri etrafında likiditeyi test ettiği görülüyor. Asıl önemli olan sweep sonrası fiyatın seviyeyi geri alıp almadığıdır."}:{cls:"neutral",status:"BELİRGİN SWEEP YOK",text:"Mevcut veride güçlü bir likidite süpürmesi teyit edilemiyor."};
+ box.innerHTML=`<div class="interpret-card ${sweep.cls}"><h3>Likiditenin sade Türkçesi</h3><div class="big-status">${sweep.status}</div><div class="meaning">${sweep.text}</div><div class="why"><b>Ne arıyoruz?</b> Fiyatın bariz tepe/dipleri süpürmesi, ardından geri alma veya devam hareketi. Bu davranış yönü belirlemek için diğer kanıtlarla birlikte değerlendirilir.</div><div class="effect"><b>Iceberg:</b> ${icebergText}</div></div>`;
 }
 
 function renderMicro(analysis) {
@@ -4583,7 +4656,7 @@ async function scanUniverse() {
       <td>${item.dma === true ? "ÜZERİNDE" : item.dma === false ? "ALTINDA" : "—"}</td>
       <td>${fmt(item.rsi,1)}</td>
       <td>${item.trend}</td>
-      <td>${item.reason}</td>
+      <td><b>${item.score >= 35 ? "Pozitif kanıtlar baskın" : item.score <= -35 ? "Negatif kanıtlar baskın" : "Kanıtlar karışık"}</b><br><span class="muted">${item.reason}</span></td>
     </tr>`;
   }).join("");
 
