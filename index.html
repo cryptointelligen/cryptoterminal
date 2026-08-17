@@ -323,7 +323,9 @@ h3 { font-size:15px; margin:0 0 7px; }
 .verdict-box{font-size:18px;line-height:1.7;padding:20px;border-radius:14px;margin-bottom:16px}
 .verdict-box.positive{border:1px solid #356d55;background:#0d2119}.verdict-box.negative{border:1px solid #75454d;background:#241217}.verdict-box.neutral{border:1px solid #5c5960;background:#17181d}
 </style>
-<style id="research-terminal-upgrade">body{font-size:15px}.panel h2{font-size:20px}.metric small{font-size:12px}.metric strong{font-size:22px}.factor p,.factor .detail{font-size:15px;line-height:1.65}.research-verdict{padding:22px;border-radius:16px;border:1px solid #31505d;background:#0b1b22;font-size:18px;line-height:1.75;margin:12px 0}.research-verdict.positive{border-color:#2e7559;background:#0c2119}.research-verdict.negative{border-color:#7d3d48;background:#241319}.research-verdict.neutral{border-color:#6b5c35;background:#211b0e}.reason-list{margin:12px 0 0;padding-left:22px}.reason-list li{margin:7px 0}.evidence-chip{display:inline-flex;padding:5px 9px;border-radius:999px;border:1px solid #31505d;background:#10242c;margin:3px;font-size:13px}.universe-controls{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:14px 0}.universe-controls input,.universe-controls select{min-height:44px;padding:10px;border:1px solid #31515d;border-radius:10px;background:#09141a;color:var(--text)}.provider-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.provider-grid input{width:100%;min-height:42px;padding:9px;border:1px solid #31515d;border-radius:9px;background:#09141a;color:var(--text)}@media(max-width:850px){.universe-controls,.provider-grid{grid-template-columns:1fr}}</style></head>
+<style id="research-terminal-upgrade">body{font-size:15px}.panel h2{font-size:20px}.metric small{font-size:12px}.metric strong{font-size:22px}.factor p,.factor .detail{font-size:15px;line-height:1.65}.research-verdict{padding:22px;border-radius:16px;border:1px solid #31505d;background:#0b1b22;font-size:18px;line-height:1.75;margin:12px 0}.research-verdict.positive{border-color:#2e7559;background:#0c2119}.research-verdict.negative{border-color:#7d3d48;background:#241319}.research-verdict.neutral{border-color:#6b5c35;background:#211b0e}.reason-list{margin:12px 0 0;padding-left:22px}.reason-list li{margin:7px 0}.evidence-chip{display:inline-flex;padding:5px 9px;border-radius:999px;border:1px solid #31505d;background:#10242c;margin:3px;font-size:13px}.universe-controls{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin:14px 0}.universe-controls input,.universe-controls select{min-height:44px;padding:10px;border:1px solid #31515d;border-radius:10px;background:#09141a;color:var(--text)}.provider-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.provider-grid input{width:100%;min-height:42px;padding:9px;border:1px solid #31515d;border-radius:9px;background:#09141a;color:var(--text)}@media(max-width:850px){.universe-controls,.provider-grid{grid-template-columns:1fr}}</style><style id="support-resistance-upgrade">
+.symbol-search-wrap{display:flex;gap:8px;min-width:330px;flex:1}.symbol-search-wrap input{flex:1}.coin-query-row{display:flex;gap:10px;margin:16px 0}.coin-query-row input{flex:1;min-height:48px;padding:12px 14px;border:1px solid #31515d;border-radius:11px;background:#09141a;color:var(--text);font-size:17px}.sr-level-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:14px 0}.sr-level{padding:18px;border-radius:14px;border:1px solid #31505d;background:#0b1b22}.sr-level.support{border-color:#2d7559;background:#0b2119}.sr-level.resistance{border-color:#7d3d48;background:#241319}.sr-level h3{margin:0 0 8px;font-size:19px}.sr-price{font-size:28px;font-weight:800}.sr-meta{color:var(--muted);font-size:15px;margin-top:6px}.sr-timeframes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.sr-tf{padding:16px;border:1px solid #29434e;border-radius:13px;background:#09171d}.sr-tf h3{margin-top:0}.sr-bar{height:8px;border-radius:99px;background:#132a33;overflow:hidden;margin:8px 0}.sr-bar span{display:block;height:100%;background:#55d39a}.sr-bar.red span{background:#ff6e7d}.support-panel{scroll-margin-top:80px}@media(max-width:900px){.sr-level-grid,.sr-timeframes{grid-template-columns:1fr}.coin-query-row{flex-direction:column}.symbol-search-wrap{min-width:0;width:100%}}
+</style></head>
 <body>
 
 <header class="topbar">
@@ -352,8 +354,11 @@ h3 { font-size:15px; margin:0 0 7px; }
   </div>
 
   <div class="controls">
-    <input id="symbolSearch" list="symbolOptions" placeholder="Coin ara: BTC, ETH, SOL…" autocomplete="off">
-    <datalist id="symbolOptions"></datalist>
+    <div class="symbol-search-wrap">
+      <input id="symbolSearch" list="symbolOptions" placeholder="Coin ara: BTC, ETH, SOL veya PEPE…" autocomplete="off">
+      <datalist id="symbolOptions"></datalist>
+      <button id="searchCoinBtn" class="primary">COİNİ ANALİZ ET</button>
+    </div>
     <select id="symbol"><option value="BTCUSDT">BTC/USDT</option></select>
     <select id="analysisTf">
       <option value="4h">4 Saat</option>
@@ -367,7 +372,7 @@ h3 { font-size:15px; margin:0 0 7px; }
   </div>
 </section>
 
-<section class="panel"><h2>Veri Sağlayıcıları ve Geniş Coin Evreni</h2><div class="beginner-note">CoinMarketCap API anahtarı ile ilk <b>3.000 varlık</b> seçilebilir evrene alınır. Ağır teknik analiz kademeli yapılır: geniş evren → aday filtreleme → derin çok-faktörlü analiz.</div><div class="provider-grid"><input id="cmcApiKey" placeholder="CoinMarketCap API Key"><input id="deepScanLimit" type="number" min="10" max="200" value="50" placeholder="Derin analiz adedi"><input id="etherscanApiKey" placeholder="Etherscan API Key (ERC-20 whale)"><input id="tokenContract" placeholder="Seçili ERC-20 token contract adresi"></div></section>
+<section class="panel"><h2>Veri Sağlayıcıları ve Geniş Coin Evreni</h2><div class="beginner-note">CoinMarketCap ile ilk <b>3.000 varlık</b> evrene alınır; sistem bu 3.000 varlığı aynı anda ağır analiz etmez. Önce evren oluşturulur, ardından <b>tam 50 coin</b> derin çok-faktörlü analize alınır. Böylece API limitleri ve tarama süresi kontrol altında tutulur.</div><div class="provider-grid"><input id="cmcApiKey" placeholder="CoinMarketCap API Key"><input id="deepScanLimit" type="number" min="50" max="50" value="50" placeholder="Derin analiz adedi (sabit 50)"><input id="etherscanApiKey" placeholder="Etherscan API Key (ERC-20 whale)"><input id="tokenContract" placeholder="Seçili ERC-20 token contract adresi"></div></section>
 
 <section class="metric-grid">
   <div class="metric"><small>Görünüm</small><strong id="overallRegime">—</strong></div>
@@ -380,6 +385,19 @@ h3 { font-size:15px; margin:0 0 7px; }
   <div class="metric"><small>Veri kalitesi</small><strong id="dataQuality">—</strong></div>
 </section>
 
+<section class="panel support-panel">
+  <h2>Coin Destek • Direnç • Detaylı Teknik İnceleme</h2>
+  <div class="beginner-note"><b>Burada ne yapıyor?</b> Yazdığın coin için 4 Saat, Günlük ve Haftalık veriyi ayrı ayrı inceler; pivot tepeler/dipler, hacim profili/POC, Bollinger bantları, EMA/SMA bölgeleri, MACD, RSI ve uyumsuzlukları bir araya getirerek <b>yakın destek</b> ve <b>yakın direnç</b> bölgelerini çıkarır. Destek/direnç tek bir çizgi değil, fiyatın tekrar tekrar tepki verdiği bir bölgedir.</div>
+  <div class="coin-query-row">
+    <input id="srCoinSearch" list="symbolOptions" placeholder="Örn: BTC, ETH, SOL, PEPE…">
+    <button id="runSrAnalysis" class="primary">DESTEK / DİRENÇ ANALİZİ</button>
+  </div>
+  <div id="srVerdict" class="research-verdict neutral">Bir coin yazıp analizi başlat. Sistem destek, direnç ve bunların arkasındaki kanıtları açıklayacak.</div>
+  <div id="srLevels" class="sr-level-grid"></div>
+  <div id="srEvidence" class="grid-2"></div>
+  <div id="srTimeframes" class="sr-timeframes"></div>
+</section>
+
 <section class="panel">
   <h2>Coin Tarama Merkezi — Öncelikli Adaylar</h2>
   <div class="helpbox">
@@ -387,7 +405,7 @@ h3 { font-size:15px; margin:0 0 7px; }
     <p><b>Önemli:</b> “Güçlü Pozitif Görünüm” bir emir değildir. Hangi teknik kanıtların bu sonuca katkı verdiğini görmek için satıra tıklayabilirsin.</p>
   </div>
   <div class="beginner-note"><b>İlk bakışta ne yapmalısın?</b> Yeşil bir sonuç, sistemin birden fazla veri grubunda pozitif kanıt gördüğü anlamına gelir; kırmızı sonuçta negatif kanıtlar ağır basar. <b>Coin satırına tıkla:</b> sistem hangi göstergelerin sonucu desteklediğini, hangilerinin karşı çıktığını ve her birinin neden önemli olduğunu açar. Ham rakam tek başına karar değildir.</div>
-  <div class="universe-controls"><input id="universeSearch" placeholder="Sonuçlarda coin ara…"><select id="universeFilter"><option value="all">Tümü</option><option value="positive">Güçlü pozitif</option><option value="negative">Güçlü negatif</option><option value="neutral">Karışık / nötr</option></select><button id="runCmcUniverse">CMC 3.000 EVRENİ YÜKLE</button></div><div style="overflow:auto;margin-top:14px"><table class="table universe-table"><thead><tr><th>Coin</th><th>Görünüm</th><th>Skor</th><th>111 DMA</th><th>RSI</th><th>Trend</th><th>Kararın kısa açıklaması</th></tr></thead>
+  <div class="universe-controls"><input id="universeSearch" placeholder="Sonuçlarda coin ara…"><select id="universeFilter"><option value="all">Tümü</option><option value="positive">Güçlü pozitif</option><option value="negative">Güçlü negatif</option><option value="neutral">Karışık / nötr</option></select><button id="runCmcUniverse">CMC 3.000 EVRENİ YÜKLE • DERİN ANALİZ 50</button></div><div style="overflow:auto;margin-top:14px"><table class="table universe-table"><thead><tr><th>Coin</th><th>Görünüm</th><th>Skor</th><th>111 DMA</th><th>RSI</th><th>Trend</th><th>Kararın kısa açıklaması</th></tr></thead>
       <tbody id="universeRows"><tr><td colspan="7" class="muted">Universe Taraması başlatılmadı.</td></tr></tbody>
     </table>
   </div>
@@ -2137,7 +2155,7 @@ function icebergSuspicion(bookHistory) {
         : score >= 30
           ? "Zayıf iceberg şüphesi"
           : "Yeterli iceberg kanıtı yok",
-    candidates:candidates.slice(0,10),
+    candidates:candidates.slice(0,20),
     disclaimer:
       "Bu kesin iceberg tespiti değildir. Aynı seviyede zaman içindeki yenilenme davranışına dayalı istatistiksel şüphedir.",
   };
@@ -3823,7 +3841,7 @@ function smaSeries(values,period){return values.map((_,i)=>i+1>=period?mean(valu
 function recentCross(values,fastPeriod,slowPeriod){const f=smaSeries(values,fastPeriod),s=smaSeries(values,slowPeriod);for(let i=values.length-1;i>=1;i--){if(f[i]==null||s[i]==null||f[i-1]==null||s[i-1]==null)continue;if(f[i]>s[i]&&f[i-1]<=s[i-1])return{type:"GOLDEN",barsAgo:values.length-1-i};if(f[i]<s[i]&&f[i-1]>=s[i-1])return{type:"DEATH",barsAgo:values.length-1-i}}return{type:"NONE",barsAgo:null}}
 function buildCrossEvidence(candles){const c=candles.map(x=>x.close);return[[20,50],[50,100],[50,200]].map(([fast,slow])=>({fast,slow,...recentCross(c,fast,slow)}))}
 function renderDecisionNarrative(analysis,mtf=null){const score=analysis.score||aggregateScore(analysis.factors),d=analysis.derived,pos=analysis.factors.filter(f=>f.score>0).sort((a,b)=>b.score-a.score).slice(0,8),neg=analysis.factors.filter(f=>f.score<0).sort((a,b)=>a.score-b.score).slice(0,8),ev=[];ev.push(d.structure.last>d.structure.dma111?"Fiyat 111 DMA üzerinde":"Fiyat 111 DMA altında");if(d.ribbon.bullish)ev.push("EMA Ribbon bullish hizalanmış");if(d.ribbon.bearish)ev.push("EMA Ribbon bearish hizalanmış");if(d.cvd.recentChange>0)ev.push("CVD / agresif akış alıcı tarafını destekliyor");if(d.cvd.recentChange<0)ev.push("CVD / agresif akış satıcı tarafını destekliyor");const crosses=buildCrossEvidence(state.candles[state.timeframe]||[]);crosses.filter(x=>x.type!=="NONE").forEach(x=>ev.push(`${x.fast}/${x.slow} ${x.type==='GOLDEN'?'Golden Cross':'Death Cross'}${x.barsAgo===0?' yeni oluştu':` (${x.barsAgo} bar önce)`}`));const cls=score.normalized>=35?"positive":score.normalized<=-35?"negative":"neutral",verdict=score.normalized>=35?"Pozitif kanıtlar baskın.":score.normalized<=-35?"Negatif kanıtlar baskın.":"Kanıtlar karışık; tek yönde yeterli üstünlük yok.";$("plainLanguageVerdict").innerHTML=`<div class="research-verdict ${cls}"><b>${score.regime}</b> • Composite ${fmt(score.normalized,0)}/100<br><strong>${verdict}</strong><ul class="reason-list">${ev.map(x=>`<li>${x}</li>`).join("")}</ul><b>İzlenen kesişimler:</b><br>${crosses.map(x=>`<span class="evidence-chip">${x.fast}/${x.slow}: ${x.type==='GOLDEN'?'Golden Cross':x.type==='DEATH'?'Death Cross':'Yeni kesişim yok'}</span>`).join("")}</div><div class="grid-2"><div class="helpbox"><b>Pozitif kanıtlar</b><ul class="reason-list">${pos.map(f=>`<li><b>${f.name}</b>: ${f.reason} — ${f.detail}</li>`).join("")||"<li>Yok.</li>"}</ul></div><div class="helpbox"><b>Karşı / negatif kanıtlar</b><ul class="reason-list">${neg.map(f=>`<li><b>${f.name}</b>: ${f.reason} — ${f.detail}</li>`).join("")||"<li>Yok.</li>"}</ul></div></div>`}
-async function loadCmcTop3000(){const key=$("cmcApiKey").value.trim();if(!key)throw new Error("CoinMarketCap API Key girilmedi.");const r=await fetch("https://pro-api.coinmarketcap.com/v3/cryptocurrency/listings/latest?start=1&limit=3000&convert=USD&sort=market_cap&sort_dir=desc",{headers:{"X-CMC_PRO_API_KEY":key,Accept:"application/json"}});if(!r.ok)throw new Error(`CoinMarketCap HTTP ${r.status}`);const j=await r.json(),list=(j.data||[]).filter(x=>x.symbol).map(x=>({name:x.name,symbol:x.symbol,rank:x.cmc_rank,marketCap:x.quote?.USD?.market_cap||0,price:x.quote?.USD?.price||0,change24:x.quote?.USD?.percent_change_24h||0}));state.cmcUniverse=list;$("symbolOptions").innerHTML=list.map(x=>`<option value="${x.symbol}USDT">`).join("");$("symbol").innerHTML=list.map(x=>`<option value="${x.symbol}USDT">${x.symbol}/USDT</option>`).join("");return list}
+async function loadCmcTop3000(){const key=$("cmcApiKey").value.trim();const url="https://pro-api.coinmarketcap.com/v3/cryptocurrency/listings/latest?start=1&limit=3000&convert=USD&sort=market_cap&sort_dir=desc";const opts=key?{headers:{"X-CMC_PRO_API_KEY":key,Accept:"application/json"}}:{headers:{Accept:"application/json"}};const r=await fetch(key?url:url.replace("https://pro-api.coinmarketcap.com/","https://pro-api.coinmarketcap.com/public-api/"),opts);if(!r.ok)throw new Error(`CoinMarketCap HTTP ${r.status}. API anahtarını kontrol et.`);const j=await r.json(),list=(j.data||[]).filter(x=>x.symbol).map(x=>({name:x.name,symbol:x.symbol,rank:x.cmc_rank,marketCap:x.quote?.USD?.market_cap||0,price:x.quote?.USD?.price||0,change24:x.quote?.USD?.percent_change_24h||0}));if(!list.length)throw new Error("CMC geçerli coin listesi döndürmedi.");state.cmcUniverse=list;$("symbolOptions").innerHTML=list.map(x=>`<option value="${x.symbol}">${x.name} • CMC #${x.rank||"—"}</option>`).join("");$("symbol").innerHTML=list.filter(x=>x.symbol.length<=12).map(x=>`<option value="${x.symbol}USDT">${x.symbol}/USDT</option>`).join("");return list}
 function renderUniverseRows(results){const q=$("universeSearch").value.trim().toUpperCase(),filter=$("universeFilter").value,rows=results.filter(x=>{const k=x.score>=35?"positive":x.score<=-35?"negative":"neutral";return(!q||x.symbol.includes(q)||(x.name||"").toUpperCase().includes(q))&&(filter==="all"||k===filter)});$("universeRows").innerHTML=rows.map(x=>{const c=x.score>=35?"positive":x.score<=-35?"negative":"neutral";return `<tr class="clickable" data-universe-symbol="${x.symbol}"><td><b>${x.symbol.replace("USDT","")}</b>/USDT<br><span class="small muted">CMC #${x.rank??"—"}</span></td><td><span class="signal-badge ${c}">${x.regime}</span></td><td class="${c}"><b>${x.score==null?"—":fmt(x.score,0)+"/100"}</b></td><td>${x.dma===true?"ÜZERİNDE":x.dma===false?"ALTINDA":"—"}</td><td>${fmt(x.rsi,1)}</td><td>${x.trend||"—"}</td><td><b>${x.reasonTitle||"Kanıtlar karışık"}</b><br><span class="muted">${x.reason||"Detay için tıklayın."}</span></td></tr>`}).join("")||`<tr><td colspan="7">Filtreye uyan coin yok.</td></tr>`;document.querySelectorAll("[data-universe-symbol]").forEach(row=>row.onclick=async()=>{$("symbol").value=row.dataset.universeSymbol;$("symbolSearch").value=row.dataset.universeSymbol;state.symbol=row.dataset.universeSymbol;await runFullAnalysis();window.scrollTo({top:0,behavior:"smooth"})})}
 async function loadMultiVenueQuotes(symbol){const base=symbol.replace(/USDT$/i,"");const venues=[{venue:"Binance",url:`${CONFIG.binanceRest}/api/v3/ticker/bookTicker?symbol=${symbol}`,parser:d=>({bid:Number(d.bidPrice),ask:Number(d.askPrice),volume:null})},{venue:"Bybit",url:`https://api.bybit.com/v5/market/tickers?category=spot&symbol=${symbol}`,parser:d=>{const x=d.result?.list?.[0];return{bid:Number(x?.bid1Price),ask:Number(x?.ask1Price),volume:Number(x?.volume24h)}}},{venue:"OKX",url:`https://www.okx.com/api/v5/market/ticker?instId=${base}-USDT`,parser:d=>{const x=d.data?.[0];return{bid:Number(x?.bidPx),ask:Number(x?.askPx),volume:Number(x?.vol24h)}}},{venue:"Coinbase",url:`https://api.exchange.coinbase.com/products/${base}-USDT/ticker`,parser:d=>({bid:Number(d.bid),ask:Number(d.ask),volume:Number(d.volume)})}];return Promise.all(venues.map(async v=>{try{const d=await fetchJson(v.url);return{venue:v.venue,...v.parser(d)}}catch(e){return{venue:v.venue,bid:null,ask:null,volume:null,error:e.message}}}))}
 async function renderMultiVenueArbitrage(){const quotes=await loadMultiVenueQuotes(state.symbol);$("venueRows").innerHTML=quotes.map(q=>{const sp=Number.isFinite(q.bid)&&Number.isFinite(q.ask)?(q.ask-q.bid)/((q.ask+q.bid)/2)*100:null;return `<tr><td><b>${q.venue}</b></td><td>${fmt(q.ask)}</td><td>${fmt(q.volume,0)}</td><td>${fmt(q.bid)}</td><td>${fmt(q.ask)}</td><td>${pct(sp,4)}</td><td>${Number.isFinite(q.bid)&&Number.isFinite(q.ask)?"Canlı":"Veri yok / CORS"}</td></tr>`}).join("");const valid=quotes.filter(q=>Number.isFinite(q.bid)&&Number.isFinite(q.ask));if(valid.length<2){$("arbSummary").className="research-verdict neutral";$("arbSummary").innerHTML="<b>ARİTRAJ SONUCU: YETERSİZ VERİ</b><br>En az iki bağımsız borsada gerçek bid/ask alınamadı.";$("arbExplain").innerHTML="<b>Ne demek?</b> Binance tek başına yeterli değildir. Bybit, OKX ve Coinbase de kontrol ediliyor. CORS engeli varsa bu bölüm Vercel backend'e taşınmalıdır.";return}const buy=[...valid].sort((a,b)=>a.ask-b.ask)[0],sell=[...valid].sort((a,b)=>b.bid-a.bid)[0],gross=(sell.bid/buy.ask-1)*100,c=gross>0.2?"positive":gross>0?"neutral":"negative";$("arbSummary").className=`research-verdict ${c}`;$("arbSummary").innerHTML=`<b>${gross>0.2?"POTANSİYEL FİYAT FARKI TESPİT EDİLDİ":"ANLAMLI NET FARK DOĞRULANMADI"}</b><br>En ucuz ask: <b>${buy.venue}</b> ${fmt(buy.ask)} → en yüksek bid: <b>${sell.venue}</b> ${fmt(sell.bid)} → brüt fark: <b>${pct(gross,3)}</b>.`;$("arbExplain").innerHTML="<b>Bu ne demek?</b> Fiyat farkı var; fakat ücret + slippage + transfer maliyeti düşülmeden gerçek arbitraj kârı değildir."}
@@ -4552,8 +4570,8 @@ function initEvents() {
 }
 
 async function scanUniverse(cmcList=null){
-  let universe=cmcList||state.cmcUniverse;if(!universe.length)universe=["BTC","ETH","SOL","BNB","XRP","ADA","DOGE","AVAX","LINK","DOT","LTC","BCH","ATOM","NEAR","APT","ARB","OP","INJ","SUI","SEI","FIL","ETC","XLM","HBAR","TRX","UNI","AAVE","PEPE","SHIB","MKR"].map((symbol,i)=>({symbol,rank:i+1}));
-  const limit=Math.max(10,Math.min(200,Number($("deepScanLimit").value||50))),candidates=universe.slice(0,limit),results=[];setStatus(`DERİN TARAMA • ${candidates.length} ADAY • EVREN ${universe.length}`);
+  let universe=cmcList||state.cmcUniverse;if(!universe.length)universe=["BTC","ETH","BNB","XRP","SOL","ADA","DOGE","TRX","AVAX","LINK","TON","SHIB","DOT","BCH","LTC","NEAR","UNI","MATIC","ICP","ETC","APT","FIL","HBAR","ATOM","CRO","ARB","VET","OP","MKR","INJ","STX","SUI","IMX","TAO","TIA","AAVE","ALGO","QNT","FTM","SEI","GRT","EGLD","THETA","FLOW","XTZ","SAND","MANA","AXS","EOS","NEO","KAS"].map((symbol,i)=>({symbol,rank:i+1}));
+  const limit=50,candidates=universe.slice(0,limit),results=[];setStatus(`DERİN TARAMA • ${candidates.length} ADAY • EVREN ${universe.length}`);
   for(let i=0;i<candidates.length;i++){const item=candidates[i],symbol=item.symbol.endsWith("USDT")?item.symbol:`${item.symbol}USDT`;try{const candles=await loadKlines(symbol,state.timeframe),analysis=compositeFactors(candles,null,[]),score=aggregateScore(analysis.factors),pos=analysis.factors.filter(f=>f.score>0).sort((a,b)=>b.score-a.score)[0],neg=analysis.factors.filter(f=>f.score<0).sort((a,b)=>a.score-b.score)[0],lead=score.normalized>=0?pos:neg;results.push({symbol,name:item.name,rank:item.rank,score:score.normalized,regime:score.regime,confidence:score.confidence,rsi:analysis.derived.adaptive.selected.value,dma:candles.at(-1).close>analysis.derived.structure.dma111,trend:analysis.derived.structure.bias,reasonTitle:lead?.name||"Kanıtlar karışık",reason:lead?.reason||"Birden fazla grup birbirini dengeliyor.",factors:analysis.factors});}catch(e){results.push({symbol,name:item.name,rank:item.rank,score:null,regime:"VERİ YOK",confidence:0,rsi:null,dma:null,trend:"—",reasonTitle:"Veri yok",reason:e.message,factors:[]});}if(i%5===0||i===candidates.length-1)setStatus(`DERİN TARAMA • ${i+1}/${candidates.length}`)}
   results.sort((a,b)=>(b.score??-999)-(a.score??-999));state.universeResults=results;renderUniverseRows(results);const best=results.find(x=>x.score!==null);if(best){$("symbol").value=best.symbol;$("symbolSearch").value=best.symbol;state.symbol=best.symbol;await runFullAnalysis()}setStatus(`UNIVERSE TAMAMLANDI • EVREN ${universe.length} • DERİN ${results.length}`)
 }
@@ -4561,10 +4579,106 @@ async function scanUniverse(cmcList=null){
 $("symbolSearch").addEventListener("change",()=>{const v=$("symbolSearch").value.trim().toUpperCase();if(v){$("symbol").value=v;state.symbol=v;runFullAnalysis();}});
 $("universeSearch").addEventListener("input",()=>renderUniverseRows(state.universeResults||[]));
 $("universeFilter").addEventListener("change",()=>renderUniverseRows(state.universeResults||[]));
-$("runCmcUniverse").onclick=async()=>{try{setStatus("CMC TOP 3.000 YÜKLENİYOR…");const list=await loadCmcTop3000();await scanUniverse(list);}catch(e){setStatus("CMC EVRENİ YÜKLENEMEDİ");$("universeRows").innerHTML=`<tr><td colspan="7" class="negative">${e.message}</td></tr>`;}};
+$("runCmcUniverse").onclick=async()=>{try{setStatus("CMC TOP 3.000 YÜKLENİYOR • DERİN ANALİZ 50…");const list=await loadCmcTop3000();await scanUniverse(list);}catch(e){setStatus("CMC EVRENİ YÜKLENEMEDİ");$("universeRows").innerHTML=`<tr><td colspan="7" class="negative">${e.message}</td></tr>`;}};
 initAuth();
 initEvents();
 runFullAnalysis();
+
+
+/* ========================= SUPPORT / RESISTANCE RESEARCH ENGINE ========================= */
+function normalizeCoinInput(raw){
+  let v=(raw||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if(!v) return null;
+  v=v.replace(/USDT$/i,"");
+  return v+"USDT";
+}
+function priceDistance(a,b){return b?Math.abs(a-b)/b*100:null;}
+function clusterLevels(levels, tolerancePct=0.65){
+  const sorted=levels.filter(x=>Number.isFinite(x.price)).sort((a,b)=>a.price-b.price);
+  const groups=[];
+  for(const item of sorted){
+    const g=groups.at(-1);
+    if(!g || Math.abs(item.price-g.center)/g.center*100>tolerancePct){
+      groups.push({center:item.price,items:[item]});
+    }else{
+      g.items.push(item);
+      g.center=g.items.reduce((a,x)=>a+x.price,0)/g.items.length;
+    }
+  }
+  return groups.map(g=>({price:g.center,strength:g.items.length,types:[...new Set(g.items.map(x=>x.type))]}));
+}
+function calculateSupportResistance(candles){
+  if(!candles || candles.length<80) return {supports:[],resistances:[],poc:null,vah:null,val:null,current:null};
+  const current=candles.at(-1).close;
+  const lows=pivotLows(candles,3,3).map(x=>({price:x.price,type:"Swing Low",weight:3}));
+  const highs=pivotHighs(candles,3,3).map(x=>({price:x.price,type:"Swing High",weight:3}));
+  const vp=volumeProfile(candles,40);
+  const extra=[];
+  if(Number.isFinite(vp.poc)) extra.push({price:vp.poc,type:"VPVR POC",weight:5});
+  if(Number.isFinite(vp.val)) extra.push({price:vp.val,type:"VPVR VAL",weight:2});
+  if(Number.isFinite(vp.vah)) extra.push({price:vp.vah,type:"VPVR VAH",weight:2});
+  const closes=candles.map(x=>x.close), e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200), bb=bollinger(closes,20,2);
+  if(Number.isFinite(e20)) extra.push({price:e20,type:"EMA 20",weight:2});
+  if(Number.isFinite(e50)) extra.push({price:e50,type:"EMA 50",weight:3});
+  if(Number.isFinite(e200)) extra.push({price:e200,type:"SMA/EMA 200",weight:4});
+  if(Number.isFinite(bb.lower)) extra.push({price:bb.lower,type:"Bollinger Alt Bant",weight:3});
+  if(Number.isFinite(bb.upper)) extra.push({price:bb.upper,type:"Bollinger Üst Bant",weight:3});
+  const all=[...lows,...highs,...extra];
+  const groups=clusterLevels(all,0.8).map(g=>({...g,score:g.items?g.items.reduce((a,x)=>a+x.weight,0):g.strength}));
+  const supports=groups.filter(g=>g.price<current).map(g=>({...g,distance:priceDistance(g.price,current)})).sort((a,b)=>a.distance-b.distance);
+  const resistances=groups.filter(g=>g.price>current).map(g=>({...g,distance:priceDistance(g.price,current)})).sort((a,b)=>a.distance-b.distance);
+  return {supports:supports.slice(0,5),resistances:resistances.slice(0,5),poc:vp.poc,vah:vp.vah,val:vp.val,current,ema20:e20,ema50:e50,ema200:e200,bb};
+}
+function srSignalForTf(candles){
+  const closes=candles.map(x=>x.close), last=closes.at(-1), r=rsi(closes,14), m=macd(closes), bb=bollinger(closes,20,2), div=divergenceAnalysis(candles,rsiSeries(closes,14)), crosses=buildCrossEvidence(candles);
+  const sr=calculateSupportResistance(candles);
+  const positive=[],negative=[];
+  if(last>sr.ema20) positive.push("Fiyat EMA 20 üzerinde"); else negative.push("Fiyat EMA 20 altında");
+  if(last>sr.ema50) positive.push("Fiyat EMA 50 üzerinde"); else negative.push("Fiyat EMA 50 altında");
+  if(Number.isFinite(sr.ema200)){if(last>sr.ema200) positive.push("Fiyat 200 ortalama üzerinde"); else negative.push("Fiyat 200 ortalama altında");}
+  if(r>=55) positive.push(`RSI ${fmt(r,1)}: pozitif momentum`); if(r<=45) negative.push(`RSI ${fmt(r,1)}: negatif momentum`);
+  if(Number.isFinite(m?.histogram)){if(m.histogram>0) positive.push("MACD histogram pozitif"); else negative.push("MACD histogram negatif");}
+  if(div.bullishRegular||div.bullishHidden) positive.push("Bullish divergence tespit edildi");
+  if(div.bearishRegular||div.bearishHidden) negative.push("Bearish divergence tespit edildi");
+  crosses.forEach(x=>{if(x.type==='GOLDEN') positive.push(`${x.fast}/${x.slow} Golden Cross`); if(x.type==='DEATH') negative.push(`${x.fast}/${x.slow} Death Cross`);});
+  const nearestS=sr.supports[0],nearestR=sr.resistances[0];
+  return {sr,rsi:r,macd:m,bb,div,crosses,positive,negative,last};
+}
+function renderSrLevel(level,kind,current){
+  if(!level) return `<div class="sr-level ${kind}"><h3>${kind==='support'?'Destek':'Direnç'}</h3><div class="sr-price">Bulunamadı</div><div class="sr-meta">Yeterli yakın seviye doğrulanamadı.</div></div>`;
+  const labels=level.types.join(" + ");
+  return `<div class="sr-level ${kind}"><h3>${kind==='support'?'🟢 EN YAKIN DESTEK':'🔴 EN YAKIN DİRENÇ'}</h3><div class="sr-price">${fmt(level.price)}</div><div class="sr-meta">Fiyata uzaklık: <b>${pct(level.distance,2)}</b> • Kanıt yoğunluğu: <b>${level.score}</b></div><div class="sr-meta">Oluşturan kanıtlar: ${labels}</div><div class="sr-meta">${kind==='support'?'Bu bölgeye yaklaşırken alıcıların savunma yapıp yapmadığı izlenir. Altına güçlü hacimle inilirse destek zayıflamış kabul edilir.':'Bu bölgeye yaklaşırken satıcıların baskısı izlenir. Üzerine güçlü hacim ve kabul gelirse direnç kırılımı araştırılır.'}</div></div>`;
+}
+async function runSupportResistanceResearch(raw){
+  const symbol=normalizeCoinInput(raw||$("srCoinSearch").value||$("symbolSearch").value||$("symbol").value); if(!symbol){alert("Bir coin sembolü gir.");return;}
+  $("srCoinSearch").value=symbol.replace("USDT",""); setStatus(`${symbol} • DESTEK/DİRENÇ ARAŞTIRMASI BAŞLIYOR…`);
+  const frames=[{key:"4h",label:"4 Saat"},{key:"1d",label:"Günlük"},{key:"1w",label:"Haftalık"}],out=[];
+  for(const f of frames){try{const candles=await loadKlines(symbol,f.key);out.push({key:f.key,label:f.label,candles,analysis:srSignalForTf(candles)});}catch(e){out.push({key:f.key,label:f.label,error:e.message});}}
+  const valid=out.filter(x=>x.analysis); if(!valid.length){$("srVerdict").className="research-verdict negative";$("srVerdict").innerHTML=`<b>ANALİZ YAPILAMADI</b><br>${out.map(x=>x.error||"").join("<br>")}`;return;}
+  const current=valid[0].analysis.last;
+  const supportCandidates=valid.flatMap(x=>x.analysis.sr.supports.slice(0,3).map(l=>({...l,tf:x.label}))).sort((a,b)=>a.distance-b.distance);
+  const resistanceCandidates=valid.flatMap(x=>x.analysis.sr.resistances.slice(0,3).map(l=>({...l,tf:x.label}))).sort((a,b)=>a.distance-b.distance);
+  const posCount=valid.reduce((n,x)=>n+x.analysis.positive.length,0),negCount=valid.reduce((n,x)=>n+x.analysis.negative.length,0);
+  const regime=posCount>negCount*1.35?"GÜÇLÜ POZİTİF YAPI":negCount>posCount*1.35?"GÜÇLÜ NEGATİF YAPI":"KARIŞIK / DENGELİ YAPI";
+  const cls=regime.includes("POZİTİF")?"positive":regime.includes("NEGATİF")?"negative":"neutral";
+  $("srVerdict").className=`research-verdict ${cls}`;
+  $("srVerdict").innerHTML=`<b>${symbol.replace("USDT","")}/USDT — ${regime}</b><br>Son fiyat: <b>${fmt(current)}</b><br><br><b>Sistem ne yaptı?</b> 4 Saat + Günlük + Haftalık veriyi karşılaştırdı; destek/direnç adaylarını pivotlar, VPVR POC/VAL/VAH, EMA/SMA ve Bollinger bölgeleriyle kümelendirdi; ardından RSI, MACD, Golden/Death Cross ve divergence kanıtlarını yön filtresi olarak kullandı.<br><br><b>İlk okuma:</b> ${posCount} pozitif kanıt / ${negCount} negatif kanıt. Bu bir emir değildir; kanıtların ağırlıklı yorumudur.`;
+  $("srLevels").innerHTML=renderSrLevel(supportCandidates[0],"support",current)+renderSrLevel(resistanceCandidates[0],"resistance",current);
+  const allPos=[...new Set(valid.flatMap(x=>x.analysis.positive))].slice(0,10),allNeg=[...new Set(valid.flatMap(x=>x.analysis.negative))].slice(0,10);
+  $("srEvidence").innerHTML=`<div class="helpbox"><h3>🟢 Pozitif kanıtlar</h3><ul class="reason-list">${allPos.map(x=>`<li>${x}</li>`).join("")||"<li>Belirgin pozitif kanıt yok.</li>"}</ul></div><div class="helpbox"><h3>🔴 Negatif kanıtlar</h3><ul class="reason-list">${allNeg.map(x=>`<li>${x}</li>`).join("")||"<li>Belirgin negatif kanıt yok.</li>"}</ul></div>`;
+  $("srTimeframes").innerHTML=valid.map(x=>{const a=x.analysis,s=a.positive.length>=a.negative.length?"POZİTİF": "NEGATİF";return `<div class="sr-tf"><h3>${x.label} • ${s}</h3><div>Fiyat <b>${fmt(a.last)}</b> • RSI <b>${fmt(a.rsi,1)}</b></div><div class="sr-bar"><span style="width:${Math.min(100,a.positive.length*12)}%"></span></div><div><b>Destek:</b> ${a.sr.supports.slice(0,3).map(l=>fmt(l.price)).join(" • ")||"—"}</div><div><b>Direnç:</b> ${a.sr.resistances.slice(0,3).map(l=>fmt(l.price)).join(" • ")||"—"}</div><div class="sr-meta">${a.div.bullishRegular||a.div.bullishHidden?"Bullish divergence var. ":""}${a.div.bearishRegular||a.div.bearishHidden?"Bearish divergence var. ":""}${a.crosses.filter(c=>c.type!=='NONE').map(c=>`${c.fast}/${c.slow} ${c.type==='GOLDEN'?'Golden':'Death'} Cross`).join(" • ")||"Yeni cross yok."}</div></div>`}).join("");
+  setStatus(`${symbol} • DESTEK/DİRENÇ ANALİZİ TAMAMLANDI`);
+}
+
+function bindImprovedCoinSearch(){
+  const run=async()=>{const raw=$("symbolSearch").value.trim();const v=normalizeCoinInput(raw);if(!v){$("symbolSearch").focus();return;}try{const opt=[...$("symbol").options].find(o=>o.value===v);if(opt){$("symbol").value=v;}else{$("symbol").add(new Option(v.replace("USDT","")+"/USDT",v));$("symbol").value=v;}state.symbol=v;setStatus(`${v.replace("USDT","")} • ANALİZ BAŞLIYOR…`);await runFullAnalysis();await runSupportResistanceResearch(v);}catch(e){setStatus(`${v.replace("USDT","")} • ANALİZ HATASI`);console.error(e);alert(`Coin analizi başlatılamadı: ${e.message||e}`);}};
+  $("searchCoinBtn").onclick=run;
+  $("symbolSearch").addEventListener("keydown",e=>{if(e.key==='Enter'){e.preventDefault();run();}});
+  $("symbolSearch").addEventListener("input",()=>{const v=normalizeCoinInput($("symbolSearch").value);if(v){const opt=[...$("symbol").options].find(o=>o.value===v);if(opt)$("symbol").value=v;}});
+  $("runSrAnalysis").onclick=()=>runSupportResistanceResearch();
+  $("srCoinSearch").addEventListener("keydown",e=>{if(e.key==='Enter'){e.preventDefault();runSupportResistanceResearch();}});
+}
+bindImprovedCoinSearch();
 
 </script>
 </body>
